@@ -8,7 +8,7 @@ $quiz = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM quiz WHERE id = $i
 
 // Ambil nilai siswa untuk quiz ini
 $nilai = mysqli_query($conn, "
-  SELECT tn.nilai, tn.tanggal_submit, u.nama_lengkap
+  SELECT tn.nilai, tn.tanggal_submit, u.nama_lengkap AS nama_siswa
   FROM tbl_nilai tn
   JOIN users u ON tn.id_siswa = u.id
   WHERE tn.id_quiz = $id_quiz
