@@ -2,35 +2,35 @@
 session_start();
 include 'koneksi.php';
 
-$error = '';
+// Cek apakah sudah login
+if (isset($_SESSION['username'])) {
+    header("Location: dashboard_siswa.php");
+    exit;
+}
 
-if (isset($_POST['login'])) {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = $_POST['pass'] ?? '';
+$loginError = '';
 
-    // Cek user aktif dan cocokkan username + status aktif
-    $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username' AND role = 'siswa' AND status = 'aktif'");
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $password = md5($_POST['password']); // Enkripsi password ke MD5
 
-    if (mysqli_num_rows($result) === 1) {
-        $row = mysqli_fetch_assoc($result);
+    // Cek ke database, pastikan role 'siswa' dan status 'aktif'
+    $sql = "SELECT * FROM users WHERE username = '$username' AND pass = '$password' AND role = 'siswa' AND status = 'aktif'";
+    $result = $conn->query($sql);
 
-        if (password_verify($password, $row['pass'])) {
-            // Simpan session
-            $_SESSION['login'] = true;
-            $_SESSION['id'] = $row['id'];
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['role'] = $row['role'];
-
-            header("Location: dashboard_siswa.php");
-            exit;
-        } else {
-            $error = "Password salah.";
-        }
+    if ($result->num_rows > 0) {
+        // Login berhasil
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = 'siswa';
+        header("Location: dashboard_siswa.php");
+        exit();
     } else {
-        $error = "Username tidak ditemukan atau akun Anda nonaktif.";
+        // Gagal login (salah atau status nonaktif)
+        $loginError = "❌ Username, kata sandi, atau akun belum diaktifkan!";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
