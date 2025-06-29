@@ -5,9 +5,12 @@ $mapel = $_GET['mapel'] ?? '';
 $mapel = $conn->real_escape_string($mapel);
 
 // Ambil daftar soal sesuai mata pelajaran
-$soal = $conn->query("SELECT * FROM soal 
-                      INNER JOIN quiz ON soal.id_quiz = quiz.id 
-                      WHERE quiz.mata_pelajaran = '$mapel'");
+$soal = $conn->query("
+    SELECT quiz_soal.id AS id_soal, quiz_soal.*, quiz.judul, quiz.mata_pelajaran 
+    FROM quiz_soal
+    INNER JOIN quiz ON quiz_soal.id_quiz = quiz.id 
+    WHERE quiz.mata_pelajaran = '$mapel'
+");
 ?>
 
 <!DOCTYPE html>
@@ -28,10 +31,10 @@ $soal = $conn->query("SELECT * FROM soal
         <div class="mb-4">
           <p class="font-semibold"><?= $no++ ?>. <?= htmlspecialchars($row['pertanyaan']) ?></p>
           <div class="ml-4">
-            <label><input type="radio" name="jawaban[<?= $row['id'] ?>]" value="A"> A. <?= $row['opsi_a'] ?></label><br>
-            <label><input type="radio" name="jawaban[<?= $row['id'] ?>]" value="B"> B. <?= $row['opsi_b'] ?></label><br>
-            <label><input type="radio" name="jawaban[<?= $row['id'] ?>]" value="C"> C. <?= $row['opsi_c'] ?></label><br>
-            <label><input type="radio" name="jawaban[<?= $row['id'] ?>]" value="D"> D. <?= $row['opsi_d'] ?></label>
+            <label><input type="radio" name="jawaban[<?= $row['id_soal'] ?>]" value="A" required> A. <?= htmlspecialchars($row['opsi_a']) ?></label><br>
+            <label><input type="radio" name="jawaban[<?= $row['id_soal'] ?>]" value="B"> B. <?= htmlspecialchars($row['opsi_b']) ?></label><br>
+            <label><input type="radio" name="jawaban[<?= $row['id_soal'] ?>]" value="C"> C. <?= htmlspecialchars($row['opsi_c']) ?></label><br>
+            <label><input type="radio" name="jawaban[<?= $row['id_soal'] ?>]" value="D"> D. <?= htmlspecialchars($row['opsi_d']) ?></label>
           </div>
         </div>
       <?php endwhile; ?>
